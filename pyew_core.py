@@ -235,17 +235,18 @@ class CPyew:
 
 
     def thread_UpdateComment(self):
-                
+        md5_value = md5(self.getBuffer()).hexdigest().upper()       
         while True:
-            time.sleep(1)
+            time.sleep(0.1)
             # update comment from DB server
-            md5_value = md5(self.getBuffer()).hexdigest().upper()
+            #md5_value = md5(self.getBuffer()).hexdigest().upper()
             self.customizeComment[1783] = '~test~'         
             data1 = self.customizeComment
             #pdb.set_trace()
             res_read = self.http_post(md5_value,"","read")
             if res_read not in ['0','1','-1']:
                 data2 = json.loads(self.http_post(md5_value,'','read'))
+                data2 = dict(zip(map(int, data2),data2.values()))
                 merge_data = dict(data2, **data1)
                 self.customizeComment = merge_data
                 if not os.path.isdir('json/'):

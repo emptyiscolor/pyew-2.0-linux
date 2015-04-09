@@ -34,6 +34,7 @@ import StringIO
 import datetime
 import httplib
 import json
+import pdb
 
 
 from gzip import GzipFile
@@ -207,41 +208,7 @@ class CPyew:
         self.mutexUpload = None
         self.quitFlag = False
 
-
-    def thread_UpdateComment(self):
-        
-        while True:
-            md5_value = md5(pyew.getBuffer()).hexdigest()
-            time.sleep(0.1)
-            # update comment from DB server
-            self.customizeComment[1783] = '~test~'
-            
-            data1 = self.customizeComment
-            res_read = http_post(md5,'','read')
-            if res_read not in [0,1,-1]:
-                data2 = json.loads(http_post(md5_value,'','read'))
-                merge_data = dict(data2, **data1)
-                self.customizeComment = merge_data
-                if not os.path.isdir('json/'):
-                    os.mkdir('json/')
-                with open('json/'+md5_value+'.json','wb') as f:
-                    f.write(repr(merge_data))
-                res_write = http_post(md5_value,merge_data,'write')
-                if res_write == '2':
-                    res_update=http_post(md5_value,merge_data,'update')
-            else:
-                res_write = http_post(md5_value,data1,'write')
-            
-            # for example:
-            #self.customizeComment[1783] = '~test~'
-            #self.customizeComment[1811] = '** Hello comment! **'
-
-            # the commandline of mainframe loop quit
-            if self.quitFlag:
-                break
-        pass
-
-    def http_post(key,value,method):
+    def http_post(self, key, value, method):
         host="10.255.16.124"
         port=8080
         path="/json/%s/" % method
@@ -264,8 +231,43 @@ class CPyew:
             print e
         finally:
             if httpClient:
-                httpClient.close()     
+                httpClient.close()    
 
+
+    def thread_UpdateComment(self):
+                
+        while True:
+            time.sleep(1)
+            # update comment from DB server
+            md5_value = md5(self.getBuffer()).hexdigest().upper()
+            self.customizeComment[1783] = '~test~'         
+            data1 = self.customizeComment
+            #pdb.set_trace()
+            res_read = self.http_post(md5_value,"","read")
+            if res_read not in ['0','1','-1']:
+                data2 = json.loads(self.http_post(md5_value,'','read'))
+                merge_data = dict(data2, **data1)
+                self.customizeComment = merge_data
+                if not os.path.isdir('json/'):
+                    os.mkdir('json/')
+                with open('json/'+md5_value+'.json','wb') as f:
+                    f.write(repr(merge_data))
+                res_write = self.http_post(md5_value,merge_data,'write')
+                if res_write == '2':
+                    res_update=self.http_post(md5_value,merge_data,'update')
+            else:
+                res_write = self.http_post(md5_value,data1,'write')
+
+            
+            # for example:
+            #self.customizeComment[1783] = '~test~'
+            #self.customizeComment[1811] = '** Hello comment! **'
+
+            # the commandline of mainframe loop quit
+            if self.quitFlag:
+                break
+         
+        pass
 
     def __del__(self):
         if self.f:

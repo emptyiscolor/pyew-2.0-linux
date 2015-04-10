@@ -246,6 +246,9 @@ class CPyew:
             res_read = self.http_post(md5_value,"","read")
             if res_read not in ['0','1','-1']:
                 data2 = json.loads(self.http_post(md5_value,'','read'))
+                for x in data2.keys():
+                    if not (lambda q :q.isdigit())(x):
+                        del data2[x]
                 data2 = dict(zip(map(int, data2),data2.values()))
                 merge_data = dict(data2, **data1)
                 self.customizeComment = merge_data

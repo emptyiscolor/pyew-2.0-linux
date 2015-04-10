@@ -235,6 +235,7 @@ class CPyew:
 
 
     def thread_UpdateComment(self):
+        time.sleep(0.2)
         md5_value = md5(self.getBuffer()).hexdigest().upper()       
         while True:
             time.sleep(0.1)

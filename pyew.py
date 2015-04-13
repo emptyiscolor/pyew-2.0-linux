@@ -367,8 +367,16 @@ def main(filename):
                             pyew.customizeComment[int(data[1],16)] = ' '.join(data[2:])
                         except:
                             print "Error"
+                elif len(data) == 2:
+                    data.append('')
+                if data[1].isdigit():
+                    pyew.customizeComment[int(data[1])] = data[2]
+                elif data[1][:2].lower() == "0x":
+                    try:
+                        pyew.customizeComment[int(data[1],16)] = data[2]
+                    except:
+                        print "Error"
 
-                        
             elif cmd.lower().split(" ")[0] in ["c", "u"]:
                 data = cmd.lower().split(" ")
                 if len(data) > 1:

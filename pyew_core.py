@@ -235,14 +235,14 @@ class CPyew:
 
 
     def thread_UpdateComment(self):    
-        time.sleep(0.3)  
-        while isinstance(self.f, file):
+        while True:
+            if not isinstance(self.f, file):
+                time.sleep(0.3)
             md5_value = md5(self.getBuffer()).hexdigest().upper() 
             time.sleep(0.1)
             # update comment from DB server
             #md5_value = md5(self.getBuffer()).hexdigest().upper()
-            #self.customizeComment[1783] = 'test'
-            self.customizeComment =  {1783: u'clear'}        
+            self.customizeComment[1783] = 'test'          
             data1 = self.customizeComment
             #pdb.set_trace()
             res_read = self.http_post(md5_value,"","read")
@@ -258,9 +258,9 @@ class CPyew:
                     os.mkdir('json/')
                 with open('json/'+md5_value+'.json','wb') as f:
                     f.write(repr(merge_data))
-                #res_write = self.http_post(md5_value,merge_data,'write')
+                res_write = self.http_post(md5_value,merge_data,'write')
                 #if res_write == '2':
-                res_update = self.http_post(md5_value,merge_data,'update')
+                #   res_update = self.http_post(md5_value,merge_data,'update')
             else:
                 res_write = self.http_post(md5_value,data1,'write')
 

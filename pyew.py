@@ -131,6 +131,12 @@ def showHelp(pyew):
 
 def createSchema(db):
     try:
+        sql = """create table cucomment (
+                        id integer not null primary key,
+                        addr, comment
+                        )"""
+        db.execute(sql)      
+
         sql = """create table samples (id integer not null primary key,
                                        md5, sha1, sha256, filename, type)"""
         db.execute(sql)
@@ -173,7 +179,11 @@ def saveSample(db, pyew, buf, amd5):
             addr, mnem = antidbg
             addr = "0x%08x" % addr
             cur.execute(sql, (rid, addr, mnem))
-        
+ 
+        sql = """ insert into cucomment (id, addr, comment) values (?, ?, ?) """
+        for off in pyew.customizeComment:
+            addr, text = off, pyew.customizeComment[off]
+            cur.execute(sql, (adm5, addr, text))       
         db.commit()
     except:
         print sys.exc_info()[1]
@@ -197,6 +207,19 @@ def saveAndCompareInDatabase(pyew):
                 print "NOTICE: File was previously analyzed (%s)" % row[4]
                 print
             bcontinue = False
+        cur.close()
+        cur = db.cursor()
+        sql = """ select addr,comment from cucomment where id = ? """
+        cur.execute(sql, (amd5, ))
+        cur2 = db.cursor()
+        sql2 = """ update catalog set comment=? where addr = ? """
+        for row in cur.fetchall():
+            if not row:
+                if self.customizeComment.get(row[0],1) :
+                    if self.customizeComment[row[0]] != row[1]:
+                        cur2.execute(sql2, (self.customizeComment[row[0]], row[0]))
+                else:
+                    self.customizeComment[row[0]] = row[1]
         cur.close()
         
         if bcontinue:

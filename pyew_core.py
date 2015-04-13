@@ -259,8 +259,8 @@ class CPyew:
                 with open('json/'+md5_value+'.json','wb') as f:
                     f.write(repr(merge_data))
                 res_write = self.http_post(md5_value,merge_data,'write')
-                #if res_write == '2':
-                #   res_update = self.http_post(md5_value,merge_data,'update')
+                if res_write == '2':
+                   res_update = self.http_post(md5_value,merge_data,'update')
             else:
                 res_write = self.http_post(md5_value,data1,'write')
 

@@ -234,19 +234,20 @@ class CPyew:
                 httpClient.close()    
 
 
-    def thread_UpdateComment(self):
-        time.sleep(0.2)
-        md5_value = md5(self.getBuffer()).hexdigest().upper()       
-        while True:
+    def thread_UpdateComment(self):    
+        time.sleep(0.3)  
+        while isinstance(self.f, file):
+            md5_value = md5(self.getBuffer()).hexdigest().upper() 
             time.sleep(0.1)
             # update comment from DB server
             #md5_value = md5(self.getBuffer()).hexdigest().upper()
-            self.customizeComment[1783] = '~test~'         
+            #self.customizeComment[1783] = 'test'
+            self.customizeComment =  {1783: u'clear'}        
             data1 = self.customizeComment
             #pdb.set_trace()
             res_read = self.http_post(md5_value,"","read")
             if res_read not in ['0','1','-1']:
-                data2 = json.loads(self.http_post(md5_value,'','read'))
+                data2 = json.loads(res_read)
                 for x in data2.keys():
                     if not (lambda q :q.isdigit())(x):
                         del data2[x]
@@ -257,9 +258,9 @@ class CPyew:
                     os.mkdir('json/')
                 with open('json/'+md5_value+'.json','wb') as f:
                     f.write(repr(merge_data))
-                res_write = self.http_post(md5_value,merge_data,'write')
-                if res_write == '2':
-                    res_update=self.http_post(md5_value,merge_data,'update')
+                #res_write = self.http_post(md5_value,merge_data,'write')
+                #if res_write == '2':
+                res_update = self.http_post(md5_value,merge_data,'update')
             else:
                 res_write = self.http_post(md5_value,data1,'write')
 
@@ -868,6 +869,12 @@ class CPyew:
                 if not comment :
                     if self.customizeComment.has_key(i.offset):
                         comment = "\t; %s" % self.customizeComment[i.offset]
+                        if self.customizeComment[i.offset] == '':
+                            comment = ''
+                            del self.customizeComment[i.offset]
+                        else:
+                            comment = "\t; %s" % self.customizeComment[i.offset]
+
                     
                 if self.case == 'high':
                     #ret += "0x%08x (%02x) %-20s %s%s\n" % (i.offset, i.size, i.instructionHex, str(i.mnemonic) + " " + str(ops), comment)

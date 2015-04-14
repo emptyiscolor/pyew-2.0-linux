@@ -221,6 +221,7 @@ def saveAndCompareInDatabase(pyew):
                 else:
                     self.customizeComment[row[0]] = row[1]
         cur.close()
+        cur2.close()
         
         if bcontinue:
             saveSample(db, pyew, buf, amd5)
@@ -393,10 +394,10 @@ def main(filename):
                 elif len(data) == 2:
                     data.append('')
                 if data[1].isdigit():
-                    pyew.customizeComment[int(data[1])] = data[2]
+                    pyew.customizeComment[int(data[1])] = ' '.join(data[2:])
                 elif data[1][:2].lower() == "0x":
                     try:
-                        pyew.customizeComment[int(data[1],16)] = data[2]
+                        pyew.customizeComment[int(data[1],16)] = ' '.join(data[2:])
                     except:
                         print "Error"
 

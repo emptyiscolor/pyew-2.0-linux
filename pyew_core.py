@@ -234,11 +234,11 @@ class CPyew:
                 httpClient.close()    
 
 
-    def thread_UpdateComment(self):    
+    def thread_UpdateComment(self):          
+        if not isinstance(self.f, file):
+            time.sleep(0.3)
+        md5_value = md5(self.getBuffer()).hexdigest().upper() 
         while True:
-            if not isinstance(self.f, file):
-                time.sleep(0.3)
-            md5_value = md5(self.getBuffer()).hexdigest().upper() 
             time.sleep(0.1)
             # update comment from DB server
             #md5_value = md5(self.getBuffer()).hexdigest().upper()

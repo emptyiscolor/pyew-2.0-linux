@@ -523,7 +523,7 @@ def main(filename):
                 code.interact(local=locals())
             elif cmd == "edit":
                 pyew.f.close()
-                pyew.f = open(filename, "r+wb")
+                pyew.f = open(filename, "r+b")
                 pyew.seek(0)
             elif cmd.split(" ")[0] in ["ls"]:
                 data = cmd.split(" ")
@@ -537,7 +537,7 @@ def main(filename):
                     print "Scripts available:"
                     for script in scripts:
                         print "\t", script
-            elif cmd.split(" ")[0] in ["wx", "wa"]:
+            elif cmd.split(" ")[0] in ["wx", "wa"]: 
                 if cmd.split(" ")[0] == "wx":
                     data = unhexlify(cmd.split(" ")[1])
                 else:

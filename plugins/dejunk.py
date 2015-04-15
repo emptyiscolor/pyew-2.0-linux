@@ -3,7 +3,10 @@ from binascii import unhexlify
 
 
 def dejunk(pyew,doprint=True):
+	""" Remove junkcode like mov xx, call xx,jmp """
 	dis = pyew.disassemble(pyew.buf, pyew.processor, pyew.type, pyew.lines, pyew.bsize, baseoffset=pyew.offset)
+	print "Warning! The operation may change file, please backup before use this function"
+	maxsize = pyew.maxsize
 	s = StringIO.StringIO()
 	s.write(dis)
 	s.seek(0)
@@ -15,11 +18,19 @@ def dejunk(pyew,doprint=True):
 		if '--------------' not in i:
 			sp = i.split()
 			if sp[1] in junk_patterns:
-				if  sp[2][:-3:-1] != '00':
-					#print sp
+				if sp[1] == 'e8':
+					if  int(sp[4], 16) > maxsize:
+						print sp
+						pyew.f.seek(int(sp[0], 16))
+						pyew.f.write(unhexlify('90'))
+						pyew.seek(int(sp[0], 16))
+				# deal with mov
+				elif int(sp[2][4:6] + sp[2][2:4] + sp[2][:2], 16) > maxsize:
+					print sp
 					pyew.f.seek(int(sp[0], 16))
-	                pyew.f.write(unhexlify('90'))
-	                pyew.seek(int(sp[0], 16))
+					pyew.f.write(unhexlify('90'))
+					pyew.seek(int(sp[0], 16))
+
 	        # deal with jmp 
 	        elif sp[1] in jmp_patterns:
 	        	if not flag:
@@ -40,5 +51,5 @@ def dejunk(pyew,doprint=True):
 						pyew.f.write(unhexlify('90eb'))
 						pyew.seek(int(addroffset, 16))
 
-						
+
 functions = {"dejunk": dejunk}
